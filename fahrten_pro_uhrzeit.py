@@ -1,8 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Laden der Daten
-file_path = 'combined_15min.csv'  # Aktualisieren Sie dies mit Ihrem tatsächlichen Dateipfad
+# Stellen Sie sicher, dass Sie Ihren tatsächlichen Dateipfad hier aktualisieren
+file_path = 'FahrradMuenchen/combined_15min.csv'
 data = pd.read_csv(file_path)
 
 # Extrahieren der Stunde aus der Uhrzeit
@@ -19,7 +19,13 @@ proportional_rides_per_hour = (total_rides_per_hour / total_rides) * 100
 
 # Erstellen eines Balkendiagramms für die anteiligen Fahrten pro Uhrzeit
 plt.figure(figsize=(12, 6))
-proportional_rides_per_hour.plot(kind='bar', color='skyblue')
+bars = plt.bar(proportional_rides_per_hour.index, proportional_rides_per_hour.values, color='skyblue')
+
+# Balken unter 2 Prozent in Rot markieren
+for bar, value in zip(bars, proportional_rides_per_hour.values):
+    if value < 2:
+        bar.set_color('#ff6b6b')
+
 plt.title('Anteilige Fahrten pro Uhrzeit')
 plt.xlabel('Uhrzeit')
 plt.ylabel('Anteil der Fahrten (%)')
