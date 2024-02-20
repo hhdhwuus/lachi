@@ -101,31 +101,6 @@ axs[2].set_ylabel('Gesamtanzahl der Fahrradfahrten')
 plt.tight_layout()
 plt.show()
 
-from matplotlib.backends.backend_pdf import PdfPages
-
-"""# Create a PDF to hold the plots
-pdf_path = '/mnt/data/descriptive_statistics_by_station.pdf'
-with PdfPages(pdf_path) as pdf:
-    for station, group in combined_tage_df.groupby('zaehlstelle'):
-        # Calculating descriptive statistics for 'gesamt' column
-        desc_stats = group['gesamt'].describe()
-        mode = group['gesamt'].mode().iloc[0]
-        range_value = desc_stats['max'] - desc_stats['min']
-
-        # Create a plot page
-        plt.figure(figsize=(10, 6))
-        plt.bar(['Count', 'Mean', 'Std', 'Min', '25%', '50%', '75%', 'Max', 'Mode', 'Range'],
-                [desc_stats['count'], desc_stats['mean'], desc_stats['std'], desc_stats['min'],
-                 desc_stats['25%'], desc_stats['50%'], desc_stats['75%'], desc_stats['max'], mode, range_value])
-        plt.title(f'Deskriptive Statistiken für Gesamtfahrten - {station}')
-        plt.xticks(rotation=45)
-        plt.ylabel('Wert')
-        plt.tight_layout()
-        pdf.savefig()  # saves the current figure into a pdf page
-        plt.close()
-
-pdf_path"""
-
 for station, group in combined_tage_df.groupby('zaehlstelle'):
     # Calculating descriptive statistics for 'gesamt' column
     desc_stats = group['gesamt'].describe()
@@ -143,10 +118,4 @@ for station, group in combined_tage_df.groupby('zaehlstelle'):
     plt.tight_layout()
     plt.show()
 
-
-# Frage 1: Welche Wetterfaktoren beeinflussen Fahrradfahrer am meisten?
-
-
-
-# Frage 2: Ausreißeranalyse? Was ist an dem Tag/Uhrzeit passiert? Ist das bei anderen Stationen auch so?
 

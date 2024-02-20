@@ -40,7 +40,3 @@ def update_graph(selected_zaehlstelle):
 if __name__ == '__main__':
     app.run_server(debug=True)
 
-
-
-# Controlls - Links Interval (Gemittelt Jahr, Tagesdaten, Jahr mit tagen)
-# Controls links rechts fullscren Chart
