@@ -17,12 +17,19 @@ total_rides = total_rides_per_hour.sum()
 # Berechnen der anteiligen Fahrten pro Uhrzeit
 proportional_rides_per_hour = (total_rides_per_hour / total_rides) * 100
 
-# Erstellen eines Balkendiagramms für die anteiligen Fahrten pro Uhrzeit
+
+# Plot mit angepassten Farben für Anteile unter 2%
+colors = ['grey' if percentage < 2 else 'skyblue' for percentage in proportional_rides_per_hour]
+
 plt.figure(figsize=(12, 6))
-proportional_rides_per_hour.plot(kind='bar', color='skyblue')
-plt.title('Anteilige Fahrten pro Uhrzeit')
+proportional_rides_per_hour.plot(kind='bar', color=colors)
+plt.title('Anteilige Fahrten pro Uhrzeit mit unter 2% Anteil ausgegraut')
 plt.xlabel('Uhrzeit')
 plt.ylabel('Anteil der Fahrten (%)')
 plt.xticks(rotation=0)
 plt.grid(axis='y', linestyle='--')
 plt.show()
+
+# Filtern der Daten für weitere Betrachtungen
+# Entfernen von Uhrzeiten mit weniger als 2% Anteil
+filtered_data = data[data['uhrzeit'].isin(proportional_rides_per_hour[proportional_rides_per_hour >= 2].index)]
