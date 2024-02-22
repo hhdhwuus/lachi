@@ -36,18 +36,20 @@ def process_tage_files():
         # Filter out rows where 'richtung_1' or 'richtung_2' is NA
         df_filtered = df[(df['richtung_1'] != 'NA') & (df['richtung_2'] != 'NA')]
         # Drop 'uhrzeit_start' and 'uhrzeit_ende' columns
-        df_filtered = df_filtered.drop(columns=['uhrzeit_start', 'uhrzeit_ende']).fillna(0)
+        df_filtered = df_filtered.drop(columns=['uhrzeit_start', 'uhrzeit_ende'])
+        df_filtered = df_filtered.dropna(subset=['gesamt'])
         combined_df = pd.concat([combined_df, df_filtered], ignore_index=True)
+
     
     return combined_df
 
 # Process files
-if not (os.path.join(base_dir, 'combined_15min.csv')):
+if not os.path.exists(os.path.join(base_dir, 'combined_15min.csv')):
     combined_15min_df = process_15min_files()
     combined_15min_df.to_csv(os.path.join(base_dir, 'combined_15min.csv'), index=False)
     print("15 min files have been processed and combined.")
 
-if not (os.path.join(base_dir, 'combined_tage.csv')):
+if not os.path.exists(os.path.join(base_dir, 'combined_tage.csv')):
     combined_tage_df = process_tage_files()
     combined_tage_df.to_csv(os.path.join(base_dir, 'combined_tage.csv'), index=False)
     print("Day files have been processed and combined.")
