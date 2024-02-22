@@ -32,8 +32,8 @@ app.layout = html.Div([
 def update_graph(selected_zaehlstelle):
     filtered_data = data[data['zaehlstelle'] == selected_zaehlstelle]
     filtered_data['datum'] = pd.to_datetime(filtered_data['datum'])
-    yearly_counts = filtered_data.groupby(filtered_data['datum'].dt.year)['gesamt'].sum().reset_index()
-    fig = px.line(yearly_counts, x='datum', y='gesamt', title=f'Jährlicher Verlauf der Zählungen: {selected_zaehlstelle}')
+    #yearly_counts = filtered_data.groupby(filtered_data['datum'].dt.year)['gesamt'].sum().reset_index()
+    fig = px.line(filtered_data, x='datum', y='gesamt', title=f'Jährlicher Verlauf der Zählungen: {selected_zaehlstelle}')
     return fig
 
 # App starten
