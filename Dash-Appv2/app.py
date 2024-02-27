@@ -7,18 +7,18 @@ import dash_daq as daq
 import plotly.express as px
 from dash import callback_context
 
-data_path = r'C:\Users\Jonas\Desktop\Integrationsseminar\FahrradMuenchen\combined_tage.csv'
+# Daten laden und vorverarbeiten
+data_path = './FahrradMuenchen/combined_tage.csv'
 data = pd.read_csv(data_path)
+
+# Datum einmalig konvertieren
+data['datum'] = pd.to_datetime(data['datum'])
 
 # Vorverarbeitung: Eindeutige Liste der Zählstellen
 zaehlstellen_liste = data['zaehlstelle'].unique()
 
-app = dash.Dash(
-    __name__,
-    meta_tags=[
-        {"name": "viewport", "content": "width=device-width, initial-scale=1.0"}
-    ],
-)
+# App initialisieren
+app = dash.Dash(__name__)
 
 
 # Side panel
@@ -40,6 +40,16 @@ interval_dropdown = dcc.Dropdown(
     clearable=False,
 )
 
+operation_dropdown = dcc.Dropdown(
+    id='operation-dropdown',
+    options=[
+        {'label': 'Mean', 'value': 'Mean'},
+        {'label': 'Sum', 'value': 'Sum'}
+    ],
+    value='Sum',
+    clearable=False,
+)
+
 chart_description = html.H2(id="chart-description", children="")
 
 side_panel_layout = html.Div(
@@ -52,6 +62,9 @@ side_panel_layout = html.Div(
         html.H2(id="interval-h2", children="Interval"),
         html.P(children="Select data interval"),
         html.Div(id="interval-dropdown-div", children=interval_dropdown),
+        html.H2(id="calculation-h2", children="Calculation"),
+        html.P(children="Select statistic operation"),
+        html.Div(id="operation-dropdown-div", children=operation_dropdown),
     ],
 )
 
@@ -105,32 +118,46 @@ app.layout = root_layout
 
 # Callbacks Dropdown
 @app.callback(
-    [Output('chart-graph', 'figure'),
-     Output('chart-description', 'children')],
+    Output('chart-graph', 'figure'),
     [Input('station-dropdown', 'value'),
+     Input('operation-dropdown', 'value'),
      Input('interval-dropdown', 'value')]
 )
-def update_graph(selected_zaehlstelle, selected_interval):
+def update_graph(selected_zaehlstelle, selected_operation, selected_interval):
     filtered_data = data[data['zaehlstelle'] == selected_zaehlstelle]
-    filtered_data['datum'] = pd.to_datetime(filtered_data['datum'])
-    print(filtered_data)
-    yearly_counts = filtered_data.groupby(filtered_data['datum'].dt.year)[
-        'gesamt'].sum().reset_index()
-    fig = px.line(filtered_data, x='datum', y='gesamt')
+    print(selected_operation)
 
-    # Anpassen des Layouts
-    fig.update_layout(
-        margin={"t": 30, "r": 35, "b": 40, "l": 50},
-        xaxis={"dtick": 800, "gridcolor": "#636363", "showline": True},
-        yaxis={"showgrid": False, "showline": True},
-        plot_bgcolor="#0F1117",
-        paper_bgcolor="#0F1117",
-        font={"color": "white"},
-    )
-    print(selected_interval)
-    description_text = f"Täglicher Verlauf der Zählungen: {selected_zaehlstelle}"
+    if selected_operation == "Sum":
+        if selected_interval == 'Day':
+            # Tägliche Daten aggregieren, wenn nicht bereits geschehen
+            aggregated_data = filtered_data.groupby(filtered_data['datum'].dt.date)[
+                'gesamt'].sum().reset_index(name='gesamt')
+            fig = px.line(aggregated_data, x='datum', y='gesamt',
+                          title=f"Täglicher Verlauf: {selected_zaehlstelle}")
+        else:
+            # Jährliche Daten aggregieren
+            aggregated_data = filtered_data.groupby(filtered_data['datum'].dt.year)[
+                'gesamt'].sum().reset_index(name='gesamt')
+            fig = px.line(aggregated_data, x='datum', y='gesamt',
+                          title=f"Jährlicher Verlauf: {selected_zaehlstelle}")
+    elif selected_operation == "Mean":
+        if selected_interval == 'Day':
+            # Tägliche Daten aggregieren, wenn nicht bereits geschehen
+            aggregated_data = filtered_data.groupby(filtered_data['datum'].dt.date)[
+                'gesamt'].mean().reset_index(name='gesamt')
+            fig = px.line(aggregated_data, x='datum', y='gesamt',
+                          title=f"Täglicher Verlauf: {selected_zaehlstelle}")
+        else:
+            # Jährliche Daten aggregieren
+            aggregated_data = filtered_data.groupby(filtered_data['datum'].dt.year)[
+                'gesamt'].mean().reset_index(name='gesamt')
+            fig = px.line(aggregated_data, x='datum', y='gesamt',
+                          title=f"Jährlicher Verlauf: {selected_zaehlstelle}")
 
-    return fig, description_text
+    fig.update_layout(plot_bgcolor="#0F1117",
+                      paper_bgcolor="#0F1117", font={"color": "white"})
+
+    return fig
 
 
 if __name__ == "__main__":
