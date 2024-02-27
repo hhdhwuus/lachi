@@ -41,7 +41,7 @@ body {
     font-size: medium;
 }
 
-#interval-h2 {
+#interval-h2, #calculation-h2 {
     padding-top: 20%;
     margin-bottom: 0.4rem;
     font-size: medium;
@@ -57,7 +57,7 @@ body {
 }
 
 
-#station-dropdown-div, #interval-dropdown-div{
+#station-dropdown-div, #interval-dropdown-div, #operation-dropdown-div{
     width: 100%;
     border: 0px;
 }
