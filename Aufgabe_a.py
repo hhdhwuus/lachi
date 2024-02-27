@@ -20,7 +20,7 @@ def process_15min_files():
     for file in files:
         df = pd.read_csv(file)
 
-        df_filtered = df_filtered.dropna(subset=['gesamt'])
+        df_filtered = df.dropna(subset=['gesamt'])
         combined_df = pd.concat([combined_df, df_filtered], ignore_index=True)
     
     return combined_df
