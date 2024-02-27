@@ -12,18 +12,16 @@ data = pd.read_csv('./FahrradMuenchen/combined_tage.csv')  # Adjust the path to 
 # Preprocessing: Fill or remove NaN values as appropriate for your dataset
 # For simplicity, this example drops rows with any NaN values
 # remove 0 values in the "gesamt" column
-data = data[data['gesamt'] != 0]
-data_cleaned = data.dropna()
 #remove 95% quantile
-data_cleaned = data_cleaned[data_cleaned['gesamt'] < data_cleaned['gesamt'].quantile(0.95)]
+# data = data[data['gesamt'] < data['gesamt'].quantile(0.95)]
 
 
 # Iterate through each unique 'zaehlstelle'
-for zaehlstelle in data_cleaned['zaehlstelle'].unique():
+for zaehlstelle in data['zaehlstelle'].unique():
     print(f"Training model for: {zaehlstelle}")
     
     # Filter data for the current 'zaehlstelle'
-    data_filtered = data_cleaned[data_cleaned['zaehlstelle'] == zaehlstelle]
+    data_filtered = data[data['zaehlstelle'] == zaehlstelle]
     
     # Define features and target variable
     X = data_filtered[['max.temp', 'min.temp', 'niederschlag', 'bewoelkung', 'sonnenstunden']]  # Adjust as needed
@@ -40,26 +38,27 @@ for zaehlstelle in data_cleaned['zaehlstelle'].unique():
         layers.Dropout(0.2),
         layers.Dense(1)
     ])
-    model.compile(optimizer='adam', loss='mse', metrics=['mae', 'mse'])
+    model.compile(optimizer='adam', loss='msle', metrics=['mae', 'mse'])
     model.fit(X_train, y_train, validation_split=0.2, epochs=100, batch_size=32, verbose=0)
     
     # Make predictions on the test set
     y_pred = model.predict(X_test)
-    
+    y_pred = y_pred.reshape(-1)
     # Evaluate the model
     mse = mean_squared_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
+    correlation = np.corrcoef(y_test, y_pred)[0, 1]
 
     # perform linear regression between actual and predicted values
-    slope, intercept = np.polyfit(y_test, y_pred, 1)
+    slope, intercept = np.polyfit(y_test.values.reshape(-1), y_pred.reshape(-1), 1)
 
 
     #plot prediction against actual values with regression line
     # Plot the regression line
-    plt.plot(y_test, slope * y_test + intercept, color='red')
-
+    plt.plot(y_test, slope * y_test + intercept, color='red', label='Regression Line')
+    plt.plot(y_test, y_test, color='blue', linestyle='dotted', label='Ideal Prediction')
     plt.scatter(y_test, y_pred)
-    plt.title(f'Actual vs. Predicted Values by Zaehlstelle (R² = {r2:.2f})')
+    plt.title(f'Actual vs. Predicted Values for {zaehlstelle} (correlation = {correlation:.2f})')
     plt.xlabel('Actual Values')
     plt.ylabel('Predicted Values')
     plt.legend(title=zaehlstelle, bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -68,7 +67,7 @@ for zaehlstelle in data_cleaned['zaehlstelle'].unique():
     plt.show()
 
     
-    print(f"Mean Squared Error (MSE) for {zaehlstelle}: {mse:.2f}")
+    print(f"Correlation coefficient for {zaehlstelle}: {correlation:.2f}")
     print(f"R-squared (R2) for {zaehlstelle}: {r2:.2f}\n")
 
 # Note: This example prints out the MSE and R-squared for each model. 
