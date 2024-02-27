@@ -18,7 +18,8 @@ def process_15min_files():
     for file in files:
         df = pd.read_csv(file)
         # Filter out rows where 'richtung_1' or 'richtung_2' is NA
-        df_filtered = df[(df['richtung_1'] != 'NA') & (df['richtung_2'] != 'NA')].fillna(0)
+        df_filtered = df[(df['richtung_1'] != 'NA') & (df['richtung_2'] != 'NA')]
+        df_filtered = df_filtered.dropna(subset=['gesamt'])
         combined_df = pd.concat([combined_df, df_filtered], ignore_index=True)
     
     return combined_df
