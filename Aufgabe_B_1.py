@@ -19,7 +19,7 @@ zaehlstellen = data['zaehlstelle'].unique()
 results = {}
 
 for zaehlstelle in zaehlstellen:
-    model_path = f'{model_dir}{zaehlstelle}.h5'
+    model_path = f'{model_dir}{zaehlstelle}.keras'
     model = load_model(model_path)
     
     # Filter data for the current 'zaehlstelle'
