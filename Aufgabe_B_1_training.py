@@ -28,18 +28,21 @@ for zaehlstelle in data['zaehlstelle'].unique():
     y = data_filtered['gesamt']  # Target variable
     
     # Split data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=True)
     
     # Initialize and train the linear regression model
     model = models.Sequential([
-        layers.Dense(64, activation='relu', input_shape=(X_train.shape[1],)),
-        layers.Dropout(0.2),
+        layers.Dense(64, activation='relu', input_shape=(X.shape[1],)),
+        layers.Dropout(0.5),
         layers.Dense(64, activation='relu'),
-        layers.Dropout(0.2),
+        layers.Dropout(0.5),
         layers.Dense(1)
     ])
     model.compile(optimizer='adam', loss='msle', metrics=['mae', 'mse'])
-    model.fit(X_train, y_train, validation_split=0.2, epochs=100, batch_size=32, verbose=0)
+    model.fit(X, y, validation_split=0.2, epochs=500, batch_size=32, verbose=0, shuffle=True)
+    
+    # save the model
+    model.save(f'./ProcessedData/predictionModels/{zaehlstelle}.h5')
     
     # Make predictions on the test set
     y_pred = model.predict(X_test)
