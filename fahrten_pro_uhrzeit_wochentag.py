@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 #read ./FahrradMuenchen/combined_15min.csv into data_15min
-data_15min = pd.read_csv('./FahrradMuenchen/combined_15min.csv')
+data_15min = pd.read_csv('./ProcessedData/combined_15min.csv')
 
 # Angenommen, data_15min ist Ihr DataFrame
 data_15min['datum'] = pd.to_datetime(data_15min['datum'])  # Stellen Sie sicher, dass 'datum' im Datetime-Format ist
