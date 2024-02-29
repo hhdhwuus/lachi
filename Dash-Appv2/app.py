@@ -3,12 +3,11 @@ import dash
 from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output
-import dash_daq as daq
 import plotly.express as px
 from dash import callback_context
 
 # Daten laden und vorverarbeiten
-data_path = './FahrradMuenchen/combined_tage.csv'
+data_path = './ProcessedData/combined_tage.csv'
 data = pd.read_csv(data_path)
 
 # Datum einmalig konvertieren

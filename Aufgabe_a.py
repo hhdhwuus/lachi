@@ -109,7 +109,7 @@ for station, group in combined_tage_df.groupby('zaehlstelle'):
     desc_stats = group['gesamt'].describe()
     mode = group['gesamt'].mode().iloc[0]
     range_value = desc_stats['max'] - desc_stats['min']
-
+    print(desc_stats['min'])
     # Create a plot page
     plt.figure(figsize=(10, 6))
     plt.bar(['Count', 'Mean', 'Std', 'Min', '25%', '50%', '75%', 'Max'],

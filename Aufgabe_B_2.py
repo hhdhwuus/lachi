@@ -1,35 +1,44 @@
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-from datetime import datetime
+import numpy as np
+import pandas as pd
 
-# Load your dataset
-data = pd.read_csv('./ProcessedData/combined_tage.csv')  # Adjust the path to your dataset
-df = pd.read_csv(data)
+data = pd.read_csv('./ProcessedData/combined_tage.csv')	
+# Umwandlung des 'datum' in ein datetime-Objekt für leichtere Manipulation
+data['datum'] = pd.to_datetime(data['datum'])
 
-# Umwandlung des Datums in ein datetime-Objekt und Hinzufügen einer Spalte für den Wochentag
-df['datum'] = pd.to_datetime(df['datum'])
-df['wochentag'] = df['datum'].dt.dayofweek  # Montag=0, Sonntag=6
+# Kreuther Zählstelle entfernen aufgrund von Umbau 2020. Dadurch wurden die Daten verfälscht
+data = data[data['zaehlstelle'] != 'Kreuther']
 
-# Einführung einer Spalte für Jahreszeiten: 0=Frühling, 1=Sommer, 2=Herbst, 3=Winter
-# Definition der Jahreszeiten anhand von Monaten (vereinfachte Annahme)
-seasons = {3: 0, 4: 0, 5: 0, # Frühling März, April, Mai
-           6: 1, 7: 1, 8: 1, # Sommer Juni, Juli, August
-           9: 2, 10: 2, 11: 2, # Herbst September, Oktober, November
-           12: 3, 1: 3, 2: 3} # Winter Dezember, Januar, Februar
+# Gruppierung der Daten nach Datum und Zählstelle, Berechnung des Durchschnitts
+daily_avg = data.groupby(['datum', 'zaehlstelle']).agg({'gesamt':'mean'}).reset_index()
 
-df['jahreszeit'] = df['datum'].dt.month.map(seasons)
+# Berechnung des täglichen Durchschnitts über alle Zählstellen
+overall_daily_avg = daily_avg.groupby('datum').agg({'gesamt':'mean'}).reset_index()
 
-# Gruppieren der Daten nach Jahreszeit und Wochentag, Berechnung des Durchschnitts
-wochentags_durchschnitt = df.groupby(['jahreszeit', 'wochentag'])['gesamt'].mean().unstack()
+# Extraktion des Jahres aus dem Datum für die Jahresdurchschnittsberechnung
+daily_avg['jahr'] = daily_avg['datum'].dt.year
+overall_daily_avg['jahr'] = overall_daily_avg['datum'].dt.year
 
-# Visualisierung
-fig, ax = plt.subplots(figsize=(10, 6))
-wochentags_durchschnitt.plot(kind='bar', ax=ax)
-ax.set_title('Durchschnittliche Anzahl von Fahrradfahrten nach Jahreszeit und Wochentag')
-ax.set_xlabel('Jahreszeit (0=Frühling, 1=Sommer, 2=Herbst, 3=Winter)')
-ax.set_ylabel('Durchschnittliche Anzahl von Fahrten')
-ax.set_xticklabels(['Frühling', 'Sommer', 'Herbst', 'Winter'], rotation=45)
-ax.legend(title='Wochentag', labels=['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'])
+# Berechnung des Jahresdurchschnitts für jede Zählstelle und insgesamt
+annual_avg_per_count = daily_avg.groupby(['jahr', 'zaehlstelle']).agg({'gesamt':'mean'}).reset_index()
+overall_annual_avg = overall_daily_avg.groupby('jahr').agg({'gesamt':'mean'}).reset_index()
+
+# Erstellung der Grafik
+plt.figure(figsize=(15, 8))
+
+# Jahresdurchschnitte der einzelnen Zählstellen in weniger gesättigten Farben
+for zaehlstelle in annual_avg_per_count['zaehlstelle'].unique():
+    zaehlstelle_data = annual_avg_per_count[annual_avg_per_count['zaehlstelle'] == zaehlstelle]
+    plt.plot(zaehlstelle_data['jahr'], zaehlstelle_data['gesamt'], label=zaehlstelle, alpha=0.5)
+
+# Jahresdurchschnitt über alle Zählstellen in gesättigter Farbe
+plt.plot(overall_annual_avg['jahr'], overall_annual_avg['gesamt'], label='Gesamtdurchschnitt', color='black', linewidth=2)
+
+plt.title('Jahresdurchschnitt der Fahrradfahrer an verschiedenen Zählstellen')
+plt.xlabel('Jahr')
+plt.ylabel('Durchschnittliche Anzahl der Fahrradfahrer')
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+plt.grid(True)
 plt.tight_layout()
+
 plt.show()
