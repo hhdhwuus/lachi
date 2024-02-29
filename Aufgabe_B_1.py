@@ -59,5 +59,7 @@ for i, (zaehlstelle, (y, y_pred)) in enumerate(results.items(), 1):
     plt.legend(loc='upper left')
     plt.grid(True)
 
+plt.suptitle('Wie beeinflusst das Wetter die Anzahl der Fahrradfahrten?', fontsize=34)
+
 plt.tight_layout()
 plt.show()
