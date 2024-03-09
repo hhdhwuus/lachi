@@ -39,6 +39,7 @@ plt.xlabel('Jahr')
 plt.ylabel('Durchschnittliche Anzahl der Fahrradfahrer')
 plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
 plt.grid(True)
-plt.tight_layout()
+plt.suptitle('Frage 2: Gibt es Langfristige Trends im Fahrradverkehr?', fontsize=16)
 
+plt.tight_layout()
 plt.show()

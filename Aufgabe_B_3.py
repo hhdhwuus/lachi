@@ -55,6 +55,8 @@ for i, tag_typ in enumerate(tag_typen):
     axs[i].set_xticks(indices)
     axs[i].set_xticklabels(total_rides_per_hour_r1.index)
     axs[i].legend()
+    
+plt.suptitle('Frage 3: Zu welchen Uhrzeiten fahren Fahrradfahrer wohin?', fontsize=16)
 
 plt.tight_layout()
 plt.show()
