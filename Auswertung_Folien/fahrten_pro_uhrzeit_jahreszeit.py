@@ -43,9 +43,9 @@ proportional_autumn_rides_per_hour = (autumn_rides_per_hour)
 proportional_summer_rides_per_hour = (summer_rides_per_hour)
 
 # combine all the data into a single dataframe into separate columns and save to a csv file
-combined_data = pd.concat([proportional_winter_rides_per_hour, proportional_spring_rides_per_hour, proportional_autumn_rides_per_hour, proportional_summer_rides_per_hour], axis=1)
-combined_data.columns = ['Winter', 'Spring', 'Autumn', 'Summer']
-combined_data.to_csv('ProcessedData/seasonal_rides_per_hour.csv')
+#combined_data = pd.concat([proportional_winter_rides_per_hour, proportional_spring_rides_per_hour, proportional_autumn_rides_per_hour, proportional_summer_rides_per_hour], axis=1)
+#combined_data.columns = ['Winter', 'Spring', 'Autumn', 'Summer']
+#combined_data.to_csv('ProcessedData/seasonal_rides_per_hour.csv')
 
 
 # Plotting
