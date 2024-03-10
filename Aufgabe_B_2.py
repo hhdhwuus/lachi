@@ -8,6 +8,7 @@ data['datum'] = pd.to_datetime(data['datum'])
 
 # Kreuther Zählstelle entfernen aufgrund von Umbau 2020. Dadurch wurden die Daten verfälscht
 data = data[data['zaehlstelle'] != 'Kreuther']
+data = data[data['zaehlstelle'] != 'Arnulf']
 
 # Gruppierung der Daten nach Datum und Zählstelle, Berechnung des Durchschnitts
 daily_avg = data.groupby(['datum', 'zaehlstelle']).agg({'gesamt':'mean'}).reset_index()
