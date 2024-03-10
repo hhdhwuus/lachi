@@ -7,7 +7,8 @@ import plotly.express as px
 from dash import callback_context
 
 # Daten laden und vorverarbeiten
-data_path = './ProcessedData/combined_tage.csv'
+
+data_path = r'ProcessedData/combined_tage.csv'
 data = pd.read_csv(data_path)
 
 # Datum einmalig konvertieren
@@ -62,7 +63,7 @@ side_panel_layout = html.Div(
         html.P(children="Select data interval"),
         html.Div(id="interval-dropdown-div", children=interval_dropdown),
         html.H2(id="calculation-h2", children="Calculation"),
-        html.P(children="Select statistic operation"),
+        html.P(id="calculation-p", children="Select statistic operation"),
         html.Div(id="operation-dropdown-div", children=operation_dropdown),
     ],
 )
@@ -79,7 +80,7 @@ chart = html.Div(
                 "layout": {
                     "margin": {"t": 30, "r": 35, "b": 40, "l": 50},
                     "xaxis": {"dtick": 1, "gridcolor": "#636363", "showline": False},
-                    "yaxis": {"showgrid": True},
+                    "yaxis": {"showgrid": True, "showline": False},
                     "plot_bgcolor": "#0F1117",
                     "paper_bgcolor": "#0F1117",
                     "font": {"color": "gray"},
@@ -114,6 +115,23 @@ root_layout = html.Div(
 
 app.layout = root_layout
 
+# Callbacks Calculation
+
+
+@app.callback(
+    [Output('operation-dropdown-div', 'style'),
+     Output('calculation-h2', 'style'),
+     Output('calculation-p', 'style')],
+    [Input('interval-dropdown', 'value')]
+)
+def toggle_operation_dropdown(interval_value):
+    if interval_value == 'Day':
+        # Verstecke die Elemente, wenn 'Day' ausgewählt ist
+        return [{'display': 'none'}, {'display': 'none'}, {'display': 'none'}]
+    else:
+        # Zeige die Elemente ansonsten an
+        return [{'display': 'block'}, {'display': 'block'}, {'display': 'block'}]
+
 
 # Callbacks Dropdown
 @app.callback(
@@ -124,7 +142,6 @@ app.layout = root_layout
 )
 def update_graph(selected_zaehlstelle, selected_operation, selected_interval):
     filtered_data = data[data['zaehlstelle'] == selected_zaehlstelle]
-    print(selected_operation)
 
     if selected_operation == "Sum":
         if selected_interval == 'Day':
@@ -153,8 +170,15 @@ def update_graph(selected_zaehlstelle, selected_operation, selected_interval):
             fig = px.line(aggregated_data, x='datum', y='gesamt',
                           title=f"Jährlicher Verlauf: {selected_zaehlstelle}")
 
+    fig.add_hline(y=0, line_color="white", line_width=1)
+
     fig.update_layout(plot_bgcolor="#0F1117",
-                      paper_bgcolor="#0F1117", font={"color": "white"})
+                      paper_bgcolor="#0F1117", font={"color": "white", 'size': 20}, xaxis=dict(
+                          title="Datum",
+                      ),
+                      yaxis=dict(
+                          title="Anzahl der Fahrten",
+                      ))
 
     return fig
 
