@@ -2,7 +2,7 @@
 1.  Alle für die Ausführung benötigten Bibliotheken sind in der Requirements.txt Datei aufgeführt
     Installieren Sie alle Bibliotheken durch Ausführung des Befehls:
 
-    - ´pip install -r requirements.txt´
+    - "pip install -r requirements.txt"
 
 
 # Daten
