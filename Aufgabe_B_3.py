@@ -44,6 +44,11 @@ for i, tag_typ in enumerate(tag_typen):
     # X-Werte für die Balkendiagramme
     indices = np.arange(len(total_rides_per_hour_r1))
     
+    if tag_typ == 'Werktag':
+        total_rides_per_hour = pd.concat([total_rides_per_hour_r1, total_rides_per_hour_r2], axis=1)
+        total_rides_per_hour.columns = ['Richtung 1', 'Richtung 2']
+        total_rides_per_hour.to_csv(f'./ProcessedData/data_{tag_typ.lower()}_{zaehlstelle}.csv', index=True)
+    
     # Erstellung der Balkendiagramme für beide Richtungen, nebeneinander
     axs[i].bar(indices - bar_width/2, total_rides_per_hour_r1, bar_width, label='Richtung 1')
     axs[i].bar(indices + bar_width/2, total_rides_per_hour_r2, bar_width, label='Richtung 2')
