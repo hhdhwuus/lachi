@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Load the data
-file_path = 'ProcessedData/combined_15min.csv'
+file_path = '../ProcessedData/combined_15min.csv'
 data = pd.read_csv(file_path)
 
 # Extract the hour from the time

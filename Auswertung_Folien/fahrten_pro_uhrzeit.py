@@ -3,7 +3,7 @@ import datetime
 import matplotlib.pyplot as plt
 
 # Stellen Sie sicher, dass Sie Ihren tatsächlichen Dateipfad hier aktualisieren
-file_path = 'ProcessedData/combined_15min.csv'
+file_path = '../ProcessedData/combined_15min.csv'
 data = pd.read_csv(file_path)
 
 # Extrahieren der Stunde aus der Uhrzeit

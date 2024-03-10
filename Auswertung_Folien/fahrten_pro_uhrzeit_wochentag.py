@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 #read ./FahrradMuenchen/combined_15min.csv into data_15min
-data_15min = pd.read_csv('./ProcessedData/combined_15min.csv')
+data_15min = pd.read_csv('../ProcessedData/combined_15min.csv')
 
 # Definition von Werktagen und Wochenenden
 data_15min['tag_typ'] = np.where(data_15min['wochentag'].isin(['Saturday', 'Sunday']), 'Wochenende', 'Werktag')

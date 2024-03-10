@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-combined_tage_df = pd.read_csv(os.path.join('./ProcessedData/combined_tage.csv'))
+combined_tage_df = pd.read_csv(os.path.join('../ProcessedData/combined_tage.csv'))
 combined_tage_df['datum'] = pd.to_datetime(combined_tage_df['datum'])
 
 print("durchschnitt tag: ", combined_tage_df.groupby(combined_tage_df['datum'].dt.date)["gesamt"].sum().mean())
