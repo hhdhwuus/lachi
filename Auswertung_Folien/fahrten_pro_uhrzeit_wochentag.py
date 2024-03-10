@@ -5,52 +5,40 @@ import numpy as np
 #read ./FahrradMuenchen/combined_15min.csv into data_15min
 data_15min = pd.read_csv('../ProcessedData/combined_15min.csv')
 
-# Definition von Werktagen und Wochenenden
-data_15min['tag_typ'] = np.where(data_15min['wochentag'].isin(['Saturday', 'Sunday']), 'Wochenende', 'Werktag')
+# Angenommen, data_15min ist Ihr DataFrame
+data_15min['datum'] = pd.to_datetime(data_15min['datum'])  # Stellen Sie sicher, dass 'datum' im Datetime-Format ist
+data_15min['wochentag'] = data_15min['datum'].dt.day_name()  # Fügt eine Spalte für den Wochentag hinzu
+data_15min['uhrzeit'] = pd.to_datetime(data_15min['uhrzeit_start'], format='%H:%M:%S').dt.hour
 
-# Gruppierung der Daten nach Zählstation, Tagtyp, Uhrzeit und Berechnung der Summen für richtung_1 und richtung_2
-grouped_data = data_15min.groupby(['zaehlstelle', 'tag_typ', 'uhrzeit']).agg({
-    'richtung_1': 'sum',
-    'richtung_2': 'sum'
-}).reset_index()
+# Anpassen der Plotgröße und -struktur für bessere Bildschirmanpassung
+fig, axs = plt.subplots(4, 2, figsize=(15, 20), sharex=True, sharey=True)
 
-# Einzigartige Zählstationen für die Plot-Erstellung
-zaehlstellen = grouped_data['zaehlstelle'].unique()
-
-# Plot-Erstellung
-rows = len(zaehlstellen)  # Anzahl der Zeilen basierend auf der Anzahl der Zählstationen
-fig, axs = plt.subplots(rows, 2, figsize=(15, 5*rows), sharex=True, sharey=True)  # 2 Spalten für Werktag und Wochenende
-
-# Sicherstellen, dass axs immer ein zweidimensionales Array ist für den Fall, dass nur eine Zählstation vorhanden ist
-if rows == 1:
-    axs = axs.reshape(1, -1)
-
-for i, zaehlstelle in enumerate(zaehlstellen):
-    for j, tag_typ in enumerate(['Werktag', 'Wochenende']):
-        # Filtern der Daten für die aktuelle Zählstation und Tagtyp
-        zaehlstelle_data = grouped_data[(grouped_data['zaehlstelle'] == zaehlstelle) & (grouped_data['tag_typ'] == tag_typ)]
-        
-        # Daten für Richtung 1 und 2
-        richtung_1_data = zaehlstelle_data['richtung_1']
-        richtung_2_data = zaehlstelle_data['richtung_2']
-        
-        # Bar-Plots für beide Richtungen
-        width = 0.35  # Balkenbreite
-        axs[i, j].bar(zaehlstelle_data['uhrzeit'] - width/2, richtung_1_data, width, label='Richtung 1', color='skyblue')
-        axs[i, j].bar(zaehlstelle_data['uhrzeit'] + width/2, richtung_2_data, width, label='Richtung 2', color='orange')
-        
-        # Titel und Legende
-        axs[i, j].set_title(f'{zaehlstelle} - {tag_typ}')
-        axs[i, j].legend()
-
-# Gemeinsame Achsenbeschriftungen und Anpassungen
-for ax in axs.flat:
-    ax.set(xlabel='Uhrzeit', ylabel='Anzahl der Fahrten')
-    ax.set_xticks(np.arange(0, 24, 1))  # Stellen Sie sicher, dass alle Stunden angezeigt werden
+# Entfernen des leeren Subplots (bei ungerader Anzahl von Wochentagen)
+fig.delaxes(axs[3, 1])
+wochentage = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+for i, wochentag in enumerate(wochentage):
+    # Position in der Subplot-Matrix bestimmen
+    ax = axs[i // 2, i % 2]
+    
+    # Berechnen der Gesamtzahl der Fahrten pro Uhrzeit für den jeweiligen Wochentag
+    total_rides_per_hour = data_15min[data_15min['wochentag'] == wochentag].groupby('uhrzeit')['gesamt'].sum()
+    # Berechnen der Gesamtzahl aller Fahrten für den Wochentag
+    total_rides = total_rides_per_hour.sum()
+    # Berechnen der anteiligen Fahrten pro Uhrzeit
+    proportional_rides_per_hour = (total_rides_per_hour / total_rides) * 100
+    
+    # Bestimmen der Farben basierend auf dem Anteil
+    colors = ['grey' if percentage < 2 else 'skyblue' for percentage in proportional_rides_per_hour]
+    
+    ax.bar(proportional_rides_per_hour.index, proportional_rides_per_hour, color=colors)
+    ax.set_title(f'Anteilige Fahrten pro Uhrzeit - {wochentag}')
+    ax.set_ylabel('% der Fahrten')
     ax.grid(axis='y', linestyle='--')
+
+# Setzen gemeinsamer X-Achsen-Labels und -Ticks
+for ax in axs.flat:
+    ax.set(xlabel='Uhrzeit')
+    ax.set_xticks(np.arange(0, 24, 1))  # Stellen Sie sicher, dass alle Stunden angezeigt werden
 
 plt.tight_layout()
 plt.show()
-
-
-
