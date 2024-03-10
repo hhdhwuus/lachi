@@ -37,10 +37,16 @@ total_summer_rides = summer_rides_per_hour.sum()
 total_autumn_rides = autumn_rides_per_hour.sum()
 
 # Calculate proportional rides per hour for each season
-proportional_winter_rides_per_hour = (winter_rides_per_hour / total_winter_rides) * 100
-proportional_spring_rides_per_hour = (spring_rides_per_hour / total_spring_rides) * 100
-proportional_autumn_rides_per_hour = (autumn_rides_per_hour / total_autumn_rides) * 100
-proportional_summer_rides_per_hour = (summer_rides_per_hour / total_summer_rides) * 100
+proportional_winter_rides_per_hour = (winter_rides_per_hour)
+proportional_spring_rides_per_hour = (spring_rides_per_hour)
+proportional_autumn_rides_per_hour = (autumn_rides_per_hour)
+proportional_summer_rides_per_hour = (summer_rides_per_hour)
+
+# combine all the data into a single dataframe into separate columns and save to a csv file
+combined_data = pd.concat([proportional_winter_rides_per_hour, proportional_spring_rides_per_hour, proportional_autumn_rides_per_hour, proportional_summer_rides_per_hour], axis=1)
+combined_data.columns = ['Winter', 'Spring', 'Autumn', 'Summer']
+combined_data.to_csv('ProcessedData/seasonal_rides_per_hour.csv')
+
 
 # Plotting
 plt.figure(figsize=(12, 6))

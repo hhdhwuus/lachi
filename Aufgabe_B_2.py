@@ -24,6 +24,14 @@ overall_daily_avg['jahr'] = overall_daily_avg['datum'].dt.year
 annual_avg_per_count = daily_avg.groupby(['jahr', 'zaehlstelle']).agg({'gesamt':'mean'}).reset_index()
 overall_annual_avg = overall_daily_avg.groupby('jahr').agg({'gesamt':'mean'}).reset_index()
 
+# Kombinieren der Jahresdurchschnittswerte der einzelnen Zählstellen mit dem Gesamtdurchschnitt
+combined_avg = pd.concat([annual_avg_per_count.pivot(index='jahr', columns='zaehlstelle', values='gesamt').apply(np.ceil), overall_annual_avg.set_index('jahr')['gesamt'].apply(np.ceil)], axis=1).reset_index()
+
+# Exportieren der kombinierten Daten als CSV-Datei
+combined_avg.to_csv('./ProcessedData/combined_avg.csv', index=False)
+
+
+
 # Erstellung der Grafik
 plt.figure(figsize=(15, 8))
 
